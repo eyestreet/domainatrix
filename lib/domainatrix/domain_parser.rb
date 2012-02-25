@@ -1,7 +1,7 @@
 module Domainatrix
   class DomainParser
     include Addressable
-    
+
     attr_reader :public_suffixes
 
     def initialize(file_name)
@@ -16,7 +16,7 @@ module Domainatrix
       else
         dat_file = File.open(file_name)
       end
-      
+
       dat_file.each_line do |line|
         line = line.strip
         unless (line =~ /\/\//) || line.empty?
@@ -43,7 +43,11 @@ module Domainatrix
       if uri.host == 'localhost'
         uri_hash = { :public_suffix => '', :domain => 'localhost', :subdomain => '' }
       else
-        uri_hash = parse_domains_from_host(uri.host || uri.basename)
+        if uri.host =~ /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/
+          uri_hash = { :public_suffix => '', :domain => '', :subdomain => '' }
+        else
+          uri_hash = parse_domains_from_host(uri.host || uri.basename)
+        end
       end
 
       uri_hash.merge({
